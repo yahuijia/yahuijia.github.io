@@ -6,17 +6,17 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>Hello 黑娃 | 至安的技术博客</title>
+  <title>至安的技术博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+  <meta name="description" content="centos7部署k8s集群环境介绍环境介绍安装docker-ce 18.09.9（所有机器）准备k8s环境（所有机器）安装k8s v1.16.0 master管理节点  安装kubeadm、kubelet、kubectl 初始化k8s 获取将node加入集群的命令安装k8s v1.16.0 node工作节点 安装kubeadm、kubelet 加入集群 calico网络插件(master节点)前">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello 黑娃">
-<meta property="og:url" content="http://example.com/2022/06/08/hello-world/index.html">
+<meta property="og:title" content="至安的技术博客">
+<meta property="og:url" content="http://example.com/2022/12/09/centos7%E9%83%A8%E7%BD%B2k8s%E9%9B%86%E7%BE%A4/index.html">
 <meta property="og:site_name" content="至安的技术博客">
-<meta property="og:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+<meta property="og:description" content="centos7部署k8s集群环境介绍环境介绍安装docker-ce 18.09.9（所有机器）准备k8s环境（所有机器）安装k8s v1.16.0 master管理节点  安装kubeadm、kubelet、kubectl 初始化k8s 获取将node加入集群的命令安装k8s v1.16.0 node工作节点 安装kubeadm、kubelet 加入集群 calico网络插件(master节点)前">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2022-06-08T12:14:08.586Z">
-<meta property="article:modified_time" content="2022-06-08T14:05:31.435Z">
+<meta property="article:published_time" content="2022-12-09T09:59:41.005Z">
+<meta property="article:modified_time" content="2022-12-09T09:30:25.225Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
   
@@ -154,39 +154,60 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-hello-world" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-centos7部署k8s集群" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 class="article-title" itemprop="name">
-      Hello 黑娃
-    </h1>
-  
-
-        
-        <a href="/2022/06/08/hello-world/" class="archive-article-date">
-  	<time datetime="2022-06-08T12:14:08.586Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-06-08</time>
-</a>
-        
-      </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+        <h2 id="centos7部署k8s集群"><a href="#centos7部署k8s集群" class="headerlink" title="centos7部署k8s集群"></a>centos7部署k8s集群</h2><h4 id="环境介绍"><a href="#环境介绍" class="headerlink" title="环境介绍"></a>环境介绍</h4><p>环境介绍<br>安装docker-ce 18.09.9（所有机器）<br>准备k8s环境（所有机器）<br>安装k8s v1.16.0 master管理节点</p>
+<ol>
+<li>安装kubeadm、kubelet、kubectl</li>
+<li>初始化k8s</li>
+<li>获取将node加入集群的命令<br>安装k8s v1.16.0 node工作节点</li>
+<li>安装kubeadm、kubelet</li>
+<li>加入集群</li>
+<li>calico网络插件(master节点)<br>前置工作:更改三台机器的主机名称,互相ping通</li>
+<li>hostnamectl set-hostname 节点名称</li>
+<li>more &#x2F;etc&#x2F;hostname</li>
+<li>找到每台虚拟机的ip然后  vi &#x2F;etc&#x2F;hosts<br>   复制以下内容   <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">这是我的三台虚拟机ip和名称</span><br><span class="line">192.168.31.106 master1</span><br><span class="line">192.168.31.82 node1</span><br><span class="line">192.168.31.201 node2</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h5 id="安装docker-ce-18-09-9（所有机器）"><a href="#安装docker-ce-18-09-9（所有机器）" class="headerlink" title="安装docker-ce 18.09.9（所有机器）"></a>安装docker-ce 18.09.9（所有机器）</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 安装docker所需的工具</span><br><span class="line">yum install -y yum-utils device-mapper-persistent-data lvm2</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 配置阿里云的docker源</span><br><span class="line">yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 安装docker-ce</span><br><span class="line">yum install -y docker-ce-18.09.9-3.el7</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 启动docker</span><br><span class="line">systemctl enable docker &amp;&amp; systemctl start docker</span><br></pre></td></tr></table></figure>
+<h5 id="准备k8s环境（所有机器）"><a href="#准备k8s环境（所有机器）" class="headerlink" title="准备k8s环境（所有机器）"></a>准备k8s环境（所有机器）</h5><p>最低配置2核CPU和2g内存</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"># 关闭防火墙</span><br><span class="line">systemctl disable firewalld</span><br><span class="line">systemctl stop firewalld</span><br><span class="line"></span><br><span class="line"># 关闭selinux</span><br><span class="line"># 临时禁用selinux</span><br><span class="line">setenforce 0</span><br><span class="line"># 永久关闭 修改/etc/sysconfig/selinux文件设置</span><br><span class="line">sed -i &#x27;s/SELINUX=permissive/SELINUX=disabled/&#x27; /etc/sysconfig/selinux</span><br><span class="line">sed -i &quot;s/SELINUX=enforcing/SELINUX=disabled/g&quot; /etc/selinux/config</span><br><span class="line"></span><br><span class="line"># 禁用交换分区</span><br><span class="line">swapoff -a</span><br><span class="line"># 永久禁用，打开/etc/fstab注释掉swap那一行。</span><br><span class="line">sed -i &#x27;s/.*swap.*/#&amp;/&#x27; /etc/fstab</span><br><span class="line"></span><br><span class="line"># 修改内核参数</span><br><span class="line">cat &lt;&lt;EOF &gt; /etc/sysctl.d/k8s.conf</span><br><span class="line">net.bridge.bridge-nf-call-ip6tables = 1</span><br><span class="line">net.bridge.bridge-nf-call-iptables = 1</span><br><span class="line">EOF</span><br><span class="line"># 查看刚才配置内核参数</span><br><span class="line">sysctl --system</span><br></pre></td></tr></table></figure>
+<h5 id="安装k8s-v1-16-0-master管理节点"><a href="#安装k8s-v1-16-0-master管理节点" class="headerlink" title="安装k8s v1.16.0 master管理节点"></a>安装k8s v1.16.0 master管理节点</h5><h6 id="安装kubeadm、kubelet、kubectl"><a href="#安装kubeadm、kubelet、kubectl" class="headerlink" title="安装kubeadm、kubelet、kubectl"></a>安装kubeadm、kubelet、kubectl</h6><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">由于官方k8s源在google，国内无法访问，这里使用阿里云yum源</span><br><span class="line"># 执行配置k8s阿里云源</span><br><span class="line">cat &lt;&lt;EOF &gt; /etc/yum.repos.d/kubernetes.repo</span><br><span class="line">[kubernetes]</span><br><span class="line">name=Kubernetes</span><br><span class="line">baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=1</span><br><span class="line">repo_gpgcheck=1</span><br><span class="line">gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 安装kubeadm、kubectl、kubelet</span><br><span class="line">yum install -y kubectl-1.16.0-0 kubeadm-1.16.0-0 kubelet-1.16.0-0</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 启动kubelet服务</span><br><span class="line">systemctl enable kubelet &amp;&amp; systemctl start kubelet</span><br></pre></td></tr></table></figure>
+<h6 id="初始化k8s"><a href="#初始化k8s" class="headerlink" title="初始化k8s"></a>初始化k8s</h6><p>安装k8s需要用到的docker镜像，需要访问国外网站，因此本地使用的是aliyun的镜像。<br>–apiserver-advertise-address使用的是master和node间能互相ping通的ip，我这里是192.168.33.106<br>这条命令执行时会在[preflight] You can also perform this action in beforehand using ‘’kubeadm config images pull需要等等2分钟。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 下载管理节点中用到的6个docker镜像，你可以使用docker images查看到</span><br><span class="line">kubeadm init --image-repository registry.aliyuncs.com/google_containers --kubernetes-version v1.16.0 --apiserver-advertise-address 192.168.2.100 --pod-network-cidr=10.244.0.0/16 --token-ttl 0</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> # 上面安装完成后，k8s会提示你输入如下命令，执行(非root）</span><br><span class="line">mkdir -p $HOME/.kube</span><br><span class="line">sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config</span><br><span class="line">sudo chown $(id -u):$(id -g) $HOME/.kube/config</span><br></pre></td></tr></table></figure>
+<h6 id="获取将node加入集群的命令"><a href="#获取将node加入集群的命令" class="headerlink" title="获取将node加入集群的命令"></a>获取将node加入集群的命令</h6><p>可以使用下面的命令将node节点添加到集群中，但是我们的准备工作还没完成，所以可以先记录一下这个命令(看自己kubeadm init执行成功后会返回给你node节点加入集群的命令)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubeadm join 192.168.31.106:6443 --token xwih74.uxbbs8x28zs4uayk     --discovery-token-ca-cert-hash sha256:ed1e56b58f04129222814a1049b017001adf6c283ee60a6db0637d7d9e3b33a9</span><br></pre></td></tr></table></figure>
+<p>如果忘记了，可以使用如下命令获取</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubeadm token create --print-join-command</span><br></pre></td></tr></table></figure>
+<h4 id="安装k8s-v1-16-0-node工作节点"><a href="#安装k8s-v1-16-0-node工作节点" class="headerlink" title="安装k8s v1.16.0 node工作节点"></a>安装k8s v1.16.0 node工作节点</h4><h5 id="安装kubeadm、kubelet"><a href="#安装kubeadm、kubelet" class="headerlink" title="安装kubeadm、kubelet"></a>安装kubeadm、kubelet</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"># 执行配置k8s阿里云源</span><br><span class="line">cat &lt;&lt;EOF &gt; /etc/yum.repos.d/kubernetes.repo</span><br><span class="line">[kubernetes]</span><br><span class="line">name=Kubernetes</span><br><span class="line">baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=1</span><br><span class="line">repo_gpgcheck=1</span><br><span class="line">gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 安装kubeadm、kubectl、kubelet</span><br><span class="line">yum install -y  kubeadm-1.16.0-0 kubelet-1.16.0-0</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 启动kubelet服务</span><br><span class="line">systemctl enable kubelet &amp;&amp; systemctl start kubelet</span><br></pre></td></tr></table></figure>
+<h5 id="加入集群"><a href="#加入集群" class="headerlink" title="加入集群"></a>加入集群</h5><p>如果忘记加入命令可以去master节点执行下面命令查看</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubeadm token create --print-join-command</span><br></pre></td></tr></table></figure>
+<h5 id="去master节点执行下面命令验证节点已经加入"><a href="#去master节点执行下面命令验证节点已经加入" class="headerlink" title="去master节点执行下面命令验证节点已经加入"></a>去master节点执行下面命令验证节点已经加入</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get nodes</span><br></pre></td></tr></table></figure>
+<p>下图说明我们节点已经加入成功，但是我们的节点状态还是NotReady的状态</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">NAME      STATUS   ROLES    AGE    VERSION</span><br><span class="line">master1   Ready    master   137m   v1.16.0</span><br><span class="line">node1     Ready    &lt;none&gt;   130m   v1.16.0</span><br><span class="line">node2     Ready    &lt;none&gt;   129m   v1.16.0</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<h4 id="K8S通过kubeadm以及网络方式搭建的时候，最后为了让node节点处于Ready状态，还需要安装calico插件"><a href="#K8S通过kubeadm以及网络方式搭建的时候，最后为了让node节点处于Ready状态，还需要安装calico插件" class="headerlink" title="K8S通过kubeadm以及网络方式搭建的时候，最后为了让node节点处于Ready状态，还需要安装calico插件"></a>K8S通过kubeadm以及网络方式搭建的时候，最后为了让node节点处于Ready状态，还需要安装calico插件</h4><h5 id="步骤一、下载calico-yaml文件"><a href="#步骤一、下载calico-yaml文件" class="headerlink" title="步骤一、下载calico.yaml文件"></a>步骤一、下载calico.yaml文件</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://docs.projectcalico.org/v3.14/manifests/calico.yaml --no-check-certificate</span><br></pre></td></tr></table></figure>
+<h5 id="步骤二、查看需要下载的calico镜像文件"><a href="#步骤二、查看需要下载的calico镜像文件" class="headerlink" title="步骤二、查看需要下载的calico镜像文件"></a>步骤二、查看需要下载的calico镜像文件</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 根据自己显示的docker镜像下载</span><br><span class="line">grep image calico.yaml   # 查看需要的镜像文件</span><br><span class="line">          image: docker.io/calico/cni:v3.24.3</span><br><span class="line">          image: docker.io/calico/node:v3.24.3</span><br><span class="line">          image: docker.io/calico/kube-controllers:v3.24.3</span><br></pre></td></tr></table></figure>
+<h5 id="步骤三、依次下载这些calico镜像文件"><a href="#步骤三、依次下载这些calico镜像文件" class="headerlink" title="步骤三、依次下载这些calico镜像文件"></a>步骤三、依次下载这些calico镜像文件</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker pull docker.io/calico/cni:v3.24.3</span><br><span class="line">docker pull docker.io/calico/node:v3.24.3</span><br><span class="line">docker pull docker.io/calico/kube-controllers:v3.24.3</span><br></pre></td></tr></table></figure>
+<h5 id="步骤四、安装calico插件"><a href="#步骤四、安装calico插件" class="headerlink" title="步骤四、安装calico插件"></a>步骤四、安装calico插件</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f calico.yaml  # 再运行一下yaml文件</span><br></pre></td></tr></table></figure>
+<h5 id="步骤五、查看K8S集群的calico安装情况"><a href="#步骤五、查看K8S集群的calico安装情况" class="headerlink" title="步骤五、查看K8S集群的calico安装情况"></a>步骤五、查看K8S集群的calico安装情况</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 这个是时候查看节点可能只有master节点status状态是Ready,两个node节点还是NotReady,稍等两分钟在查看即可</span><br><span class="line">kubectl get pods -A </span><br><span class="line">kubectl get nodes</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+
+
+
+
+
+
 
       
 
@@ -266,7 +287,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2022/06/08/hello-world/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2022/12/09/centos7%E9%83%A8%E7%BD%B2k8s%E9%9B%86%E7%BE%A4/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -280,15 +301,11 @@
   
 <nav id="article-nav">
   
-    <a href="/2022/06/08/hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E6%80%BB%E7%BB%93/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          hexo搭建博客总结
-        
-      </div>
-    </a>
   
+    <a href="/2022/06/08/hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E6%80%BB%E7%BB%93/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">hexo搭建博客总结</div>
+      <i class="icon-circle-right"></i>
+    </a>
   
 </nav>
 
